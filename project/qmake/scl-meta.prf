@@ -1,0 +1,11 @@
+!*msvc*: LIBS *= -lscl-meta
+
+INCLUDEPATH *= \
+    $${PWD}/../../include \
+
+DEPENDPATH *= \
+    $${PWD}/../../include \
+
+CONFIG *= c++11
+
+DEPENDS *= \
