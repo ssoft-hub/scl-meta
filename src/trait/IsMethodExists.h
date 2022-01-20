@@ -40,6 +40,6 @@
     template < typename _Type, typename ... _Arguments > \
     static constexpr bool is_ ## method ## _method_exists = Is_ ## method ## _MethodExists< _Type, _Arguments ... >::value; \
     template < typename _Type, typename ... _Arguments > \
-    static constexpr bool is ## method ## MethodExists () { return Is_ ## method ## _MethodExists< _Type, _Arguments ... >::value; } \
+    static constexpr bool is_ ## method ## _MethodExists () { return Is_ ## method ## _MethodExists< _Type, _Arguments ... >::value; } \
 
 #endif
