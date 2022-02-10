@@ -1,12 +1,12 @@
 #pragma once
-#ifndef SCL_UTILITY_SCL_IS_METHOD_EXISTS_H
-#define SCL_UTILITY_SCL_IS_METHOD_EXISTS_H
+#ifndef SCL_UTILITY_SCL_DOES_METHOD_EXIST_H
+#define SCL_UTILITY_SCL_DOES_METHOD_EXIST_H
 
 #include <type_traits>
 
-#define SCL_IS_METHOD_EXISTS_TRAIT( method ) \
+#define SCL_DOES_METHOD_EXIST_TRAIT( method ) \
     template < typename _Type, typename ... _Arguments > \
-    struct Is_ ## method ## _MethodExistsHelper \
+    struct Does_ ## method ## _MethodExistHelper \
     { \
     private: \
         template < typename _Test, \
@@ -21,7 +21,7 @@
     }; \
     \
     template < typename _Type, typename _Result, typename ... _Arguments > \
-    struct Is_ ## method ## _MethodExistsHelper< _Type, _Result( _Arguments ... ) > \
+    struct Does_ ## method ## _MethodExistHelper< _Type, _Result( _Arguments ... ) > \
     { \
     private: \
         template < typename _Test, \
@@ -36,10 +36,10 @@
     }; \
     \
     template < typename _Type, typename ... _Arguments > \
-    using Is_ ## method ## _MethodExists = typename Is_ ## method ## _MethodExistsHelper< _Type, _Arguments ... >::Type; \
+    using Does_ ## method ## _MethodExist = typename Does_ ## method ## _MethodExistHelper< _Type, _Arguments ... >::Type; \
     template < typename _Type, typename ... _Arguments > \
-    static constexpr bool is_ ## method ## _method_exists = Is_ ## method ## _MethodExists< _Type, _Arguments ... >::value; \
+    static constexpr bool does_ ## method ## _method_exist = Does_ ## method ## _MethodExist< _Type, _Arguments ... >::value; \
     template < typename _Type, typename ... _Arguments > \
-    static constexpr bool is_ ## method ## _MethodExists () { return Is_ ## method ## _MethodExists< _Type, _Arguments ... >::value; } \
+    static constexpr bool does_ ## method ## _MethodExist () { return Does_ ## method ## _MethodExist< _Type, _Arguments ... >::value; } \
 
 #endif
