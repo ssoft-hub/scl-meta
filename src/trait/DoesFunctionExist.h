@@ -1,12 +1,12 @@
 #pragma once
-#ifndef SCL_UTILITY_IS_FUNCTION_EXISTS_H
-#define SCL_UTILITY_IS_FUNCTION_EXISTS_H
+#ifndef SCL_UTILITY_DOES_FUNCTION_EXIST_H
+#define SCL_UTILITY_DOES_FUNCTION_EXIST_H
 
 #include <type_traits>
 
-#define SCL_IS_FUNCTION_EXISTS_TRAIT( function, shortname ) \
+#define SCL_DOES_FUNCTION_EXIST_TRAIT( function, shortname ) \
     template < typename _Type, typename ... _Arguments > \
-    struct Is_ ## shortname ## _FunctionExistsHelper { \
+    struct Does_ ## shortname ## _FunctionExistHelper { \
     private: \
         template < typename _Test, \
             typename = decltype( function( ::std::declval< _Arguments >() ... ) ) > \
@@ -20,7 +20,7 @@
     }; \
     \
     template < typename _Type, typename _Result, typename ... _Arguments > \
-    struct Is_ ## shortname ## _FunctionExistsHelper< _Type, _Result( _Arguments ... ) > \
+    struct Does_ ## shortname ## _FunctionExistHelper< _Type, _Result( _Arguments ... ) > \
     { \
     private: \
         template < typename _Test, \
@@ -35,10 +35,10 @@
     }; \
     \
     template < typename ... _Arguments > \
-    using Is_ ## shortname ## _FunctionExists = typename Is_ ## shortname ## _FunctionExistsHelper< void, _Arguments ... >::Type; \
+    using Does_ ## shortname ## _FunctionExist = typename Does_ ## shortname ## _FunctionExistHelper< void, _Arguments ... >::Type; \
     template < typename ... _Arguments > \
-    /*inline*/ constexpr bool is_ ## shortname ## _function_exists = Is_ ## shortname ## _FunctionExists< void, _Arguments ... >::value; \
+    /*inline*/ constexpr bool does_ ## shortname ## _function_exist = Does_ ## shortname ## _FunctionExist< void, _Arguments ... >::value; \
     template < typename ... _Arguments > \
-    inline constexpr bool is ## shortname ## FunctionExists () { return Is_ ## shortname ## _FunctionExists< void, _Arguments ... >::value; } \
+    inline constexpr bool does ## shortname ## FunctionExist () { return Does_ ## shortname ## _FunctionExist< void, _Arguments ... >::value; } \
 
 #endif
