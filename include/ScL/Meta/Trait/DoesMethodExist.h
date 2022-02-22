@@ -1,1 +1,1 @@
-#include "../../../../src/trait/DoesMethodExist.h"
+#include "../../../../src/Trait/DoesMethodExist.h"
