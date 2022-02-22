@@ -9,3 +9,4 @@ DEPENDPATH *= \
 CONFIG *= c++11
 
 DEPENDS *= \
+    scl-utility \
