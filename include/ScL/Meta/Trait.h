@@ -1,4 +1,4 @@
-#include "Trait/DoesFunctionExist.h"
-#include "Trait/DoesMethodExist.h"
-#include "Trait/DoesOperatorExist.h"
+#include "Trait/Detection/Function.h"
+#include "Trait/Detection/Method.h"
+#include "Trait/Detection/Operator.h"
 #include "Trait/IsDetected.h"

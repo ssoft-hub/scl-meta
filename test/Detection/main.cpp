@@ -17,7 +17,7 @@ template < typename ... _Arguments >
 using FooFunctionUnstrictOperation = decltype( foo( ::std::declval< _Arguments >() ... ) );
 
 template < typename ... _Arguments >
-using FooFunctionStrictOperation = decltype( ::std::integral_constant< FooFunctionUnstrictOperation< _Arguments ... >(*)( _Arguments ... ), &foo >::value( ::std::declval< _Arguments >() ... ) );
+using FooFunctionStrictOperation = decltype( ::std::integral_constant< FooFunctionUnstrictOperation< _Arguments ... >(*)( _Arguments ... ), (&foo) >::value( ::std::declval< _Arguments >() ... ) );
 
 // Test
 static_assert( isDetected< FooFunctionUnstrictOperation >(), "The foo() was defined but not detected!" );
@@ -64,7 +64,7 @@ static_assert( !Detector< FooFunctionStrictOperation, char >::isDetectedConverti
 static_assert( Detector< FooFunctionUnstrictOperation, int(int) >::isDetected(), "The foo(void) was defined but not detected!" );
 static_assert( Detector< FooFunctionStrictOperation, int(int) >::isDetected(), "The foo(void) was defined but not detected!" );
 
-//SCL_DOES_FUNCTION_EXIST_TRAIT( foo, Foo )
+//SCL_DOES_FUNCTION_EXIST( foo, Foo )
 template < typename ... _Arguments >
 inline static constexpr bool doesFooFunctionExist() { return ::ScL::Meta::Detector< FooFunctionStrictOperation, _Arguments ... >::isDetected(); }
 
@@ -86,9 +86,9 @@ static_assert( !doesFooFunctionExist< int(char) >(), "The foo(char) was not defi
 
 // Define some kinds of foo member
 
-//SCL_DOES_COMPATIBLE_METHOD_EXIST_TRAIT( foo, Foo )
-//SCL_DOES_STATIC_METHOD_EXIST_TRAIT( foo, Foo )
-//SCL_DOES_METHOD_EXIST_TRAIT1( foo, Foo )
+//SCL_DOES_COMPATIBLE_METHOD_EXIST( foo, Foo )
+//SCL_DOES_STATIC_METHOD_EXIST( foo, Foo )
+//SCL_DOES_METHOD_EXIST( foo, Foo )
 
 
 
