@@ -104,27 +104,4 @@ namespace ScL { namespace Meta
          */
 }}
 
-namespace ScL { namespace Meta
-{
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    struct Detector
-    {
-        static constexpr bool isDetected () { return ::ScL::Meta::isDetected< _Operation, _Arguments ... >(); }
-        template < typename _Expected > static constexpr bool isDetectedExact () { return ::ScL::Meta::isDetectedExact< _Expected, _Operation, _Arguments ... >(); }
-        template < typename _Expected > static constexpr bool isDetectedConvertible () { return ::ScL::Meta::isDetectedConvertible< _Expected, _Operation, _Arguments ... >(); }
-    };
-
-    template < template < typename ... > class _Operation, typename _Result, typename ... _Arguments >
-    struct Detector< _Operation, _Result( _Arguments ... ) >
-    {
-        static constexpr bool isDetected () { return ::ScL::Meta::isDetectedExact< _Result, _Operation, _Arguments ... >(); }
-    };
-
-    template < template < typename ... > class _Operation, typename _Type, typename _Result, typename ... _Arguments >
-    struct Detector< _Operation, _Type, _Result( _Arguments ... ) >
-    {
-        static constexpr bool isDetected () { return ::ScL::Meta::isDetectedExact< _Result, _Operation, _Type, _Arguments ... >(); }
-    };
-}}
-
 #endif

@@ -52,30 +52,21 @@ static_assert( isDetectedConvertible< double, FooFunctionStrictOperation, int >(
 
 // Detector
 
-static_assert( Detector< FooFunctionUnstrictOperation, int >::isDetected(), "The foo(int) was defined but not detected!" );
-static_assert( Detector< FooFunctionUnstrictOperation, int >::isDetectedExact< int >(), "The int foo(int) was defined but not detected!" );
-static_assert( Detector< FooFunctionUnstrictOperation, char >::isDetectedConvertible< double >(), "The convertible int foo(int) was defined but not detected!" );
+static_assert( isDetected< FooFunctionUnstrictOperation, int >(), "The foo(int) was defined but not detected!" );
+static_assert( isDetectedExact< int, FooFunctionUnstrictOperation, int >(), "The int foo(int) was defined but not detected!" );
+static_assert( isDetectedConvertible< double, FooFunctionUnstrictOperation, char >(), "The convertible int foo(int) was defined but not detected!" );
 
-static_assert( Detector< FooFunctionStrictOperation, int >::isDetected(), "The foo(int) was defined but not detected!");
-static_assert( Detector< FooFunctionStrictOperation, int >::isDetectedExact< int >(), "The int foo(int) was defined but not detected!");
-static_assert( !Detector< FooFunctionStrictOperation, char >::isDetectedConvertible< double >(), "The convertible foo(char) was not defined but detected!");
+static_assert( isDetected< FooFunctionStrictOperation, int >(), "The foo(int) was defined but not detected!");
+static_assert( isDetectedExact< int, FooFunctionStrictOperation, int >(), "The int foo(int) was defined but not detected!");
+static_assert( !isDetectedConvertible< double, FooFunctionStrictOperation, char >(), "The convertible foo(char) was not defined but detected!");
 
-
-static_assert( Detector< FooFunctionUnstrictOperation, int(int) >::isDetected(), "The foo(void) was defined but not detected!" );
-static_assert( Detector< FooFunctionStrictOperation, int(int) >::isDetected(), "The foo(void) was defined but not detected!" );
-
-//SCL_DOES_FUNCTION_EXIST( foo, Foo )
 template < typename ... _Arguments >
-inline static constexpr bool doesFooFunctionExist() { return ::ScL::Meta::Detector< FooFunctionStrictOperation, _Arguments ... >::isDetected(); }
+inline static constexpr bool doesFooFunctionExist() { return ::ScL::Meta::isDetected< FooFunctionStrictOperation, _Arguments ... >(); }
 
 static_assert( doesFooFunctionExist<>(), "The foo() was defined but not detected!" );
-static_assert( doesFooFunctionExist< void() >(), "The foo() was defined but not detected!" );
 static_assert( doesFooFunctionExist< int >(), "The foo(int) was defined but not detected!" );
-static_assert( doesFooFunctionExist< int(int) >(), "The foo(int) was defined but not detected!" );
 static_assert( doesFooFunctionExist< double >(), "The foo(double) was defined but not detected!" );
-static_assert( doesFooFunctionExist< double(double) >(), "The foo(double) was defined but not detected!" );
 static_assert( doesFooFunctionExist< int, double >(), "The foo(double) was defined but not detected!" );
-static_assert( doesFooFunctionExist< void(int, double) >(), "The foo(double) was defined but not detected!" );
 static_assert( !doesFooFunctionExist< double, int >(), "The foo(double) was defined but not detected!" );
 static_assert( !doesFooFunctionExist< void(double, int) >(), "The foo(double) was defined but not detected!" );
 static_assert( !doesFooFunctionExist< char >(), "The foo(char) was not defined but detected!" );
@@ -85,21 +76,14 @@ static_assert( !doesFooFunctionExist< int(char) >(), "The foo(char) was not defi
 /// MEMBER METHOD DETECTION TEST
 
 // Define some kinds of foo member
+template < typename _Type, typename ... _Arguments >
+using FooUnstrictMemberOperation = decltype( ::std::declval< _Type >(). foo ( ::std::declval< _Arguments >() ... ) );
 
-//SCL_DOES_COMPATIBLE_METHOD_EXIST( foo, Foo )
-//SCL_DOES_STATIC_METHOD_EXIST( foo, Foo )
-//SCL_DOES_METHOD_EXIST( foo, Foo )
+template < typename _Type, typename ... _Arguments >
+using FooStaticMethodStrictOperation = decltype( ::std::integral_constant< FooUnstrictMemberOperation< _Type, _Arguments ... >(*)( _Arguments ... ), &::std::decay_t< _Type >::foo >::value( ::std::declval< _Arguments >() ... ) );
 
-
-
-    template < typename _Type, typename ... _Arguments >
-    using FooUnstrictMemberOperation = decltype( ::std::declval< _Type >(). foo ( ::std::declval< _Arguments >() ... ) );
-
-    template < typename _Type, typename ... _Arguments >
-    using FooStaticMethodStrictOperation = decltype( ::std::integral_constant< FooUnstrictMemberOperation< _Type, _Arguments ... >(*)( _Arguments ... ), &::std::decay_t< _Type >::foo >::value( ::std::declval< _Arguments >() ... ) );
-
-    template < typename _Type, typename ... _Arguments >
-    using FooMethodStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, FooUnstrictMemberOperation< _Type, _Arguments ... >( _Arguments ... ) >, &::std::decay_t< _Type >::foo >::value)( ::std::declval< _Arguments >() ... ) );
+template < typename _Type, typename ... _Arguments >
+using FooMethodStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, FooUnstrictMemberOperation< _Type, _Arguments ... >( _Arguments ... ) >, &::std::decay_t< _Type >::foo >::value)( ::std::declval< _Arguments >() ... ) );
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -131,11 +115,9 @@ static_assert( isDetectedExact< int, FooMethodStrictOperation, A const, int >(),
 static_assert( !isDetectedExact< double, FooMethodStrictOperation, A, double >(), "The convenient member double A::foo(double) was not declared but detected!" );
 static_assert( isDetectedConvertible< double, FooMethodStrictOperation, A const, int >(), "The convertible member int A::foo(int) const was declared but not detected!" );
 
-static_assert( Detector< FooMethodStrictOperation, A const, int >::isDetected(), "The member int A::foo(int) const was declared but not detected!" );
-static_assert( Detector< FooMethodStrictOperation, A const, int >::isDetectedExact< int >(), "The member int A::foo(int) const was declared but not detected!" );
-static_assert( Detector< FooMethodStrictOperation, A const, int >::isDetectedConvertible< double >(), "The convertible member int A::foo(int) const was declared but not detected!" );
-static_assert( Detector< FooMethodStrictOperation, A const, int(int) >::isDetected(), "The member int A::foo(int) const was declared but not detected!" );
-static_assert( !Detector< FooMethodStrictOperation, A const, void(int) >::isDetected(), "The member int A::foo(int) const was declared but not detected!" );
+static_assert( isDetected< FooMethodStrictOperation, A const, int >(), "The member int A::foo(int) const was declared but not detected!" );
+static_assert( isDetectedExact< int, FooMethodStrictOperation, A const, int >(), "The member int A::foo(int) const was declared but not detected!" );
+static_assert( isDetectedConvertible< double, FooMethodStrictOperation, A const, int >(), "The convertible member int A::foo(int) const was declared but not detected!" );
 
 struct B
 {
@@ -166,49 +148,38 @@ C operator - ( const C & left, const C & right );   // global binary
 
 // Any member
     template < typename _Type, typename ... _Arguments >
-    using OperatorPlusPlusUnstrictOperation = decltype( ::std::declval< _Type >().operator ++ ( ::std::declval< _Arguments >() ... ) );
+    using TestPlusPlusUnstrictOperation = decltype( ::std::declval< _Type >().operator ++ ( ::std::declval< _Arguments >() ... ) );
 
     template < typename _Type, typename ... _Arguments >
-    using OperatorPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, OperatorPlusPlusUnstrictOperation< _Type, _Arguments ... >( _Arguments ... ) >
+    using TestPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, TestPlusPlusUnstrictOperation< _Type, _Arguments ... >( _Arguments ... ) >
         , &::std::decay_t< _Type >::operator ++ >::value)( ::std::declval< _Arguments >() ... ) );
 
 // Any global
-//    template < typename _Left, typename _Right, typename = ::std::enable_if_t < ::std::is_pod< _Left >::value && ::std::is_pod< _Right >::value > >
-//    auto baseOperatorMinus ( _Left && left, _Right && right ) -> decltype( ::std::declval< _Left && > - ::std::declval< _Right && > );
-
-//    template < typename ... _Arguments >
-//    using OperatorMinusUnstrictOperation = decltype( operator - ( ::std::declval< _Arguments >() ... ) );
+    template < typename _Left, typename _Right >
+    using TestSubtractionUnstrictOperation = decltype( ::std::declval< _Left >() - ::std::declval< _Right >() );
 
     template < typename _Left, typename _Right >
-    using OperatorMinusUnstrictOperation = decltype( ::std::declval< _Left >() - ::std::declval< _Right >() );
-
-    template < typename _Left, typename _Right >
-    using MemberMinusStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, OperatorMinusUnstrictOperation< _Left, _Right >( _Right ) >
+    using TestSubtractionMemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, TestSubtractionUnstrictOperation< _Left, _Right >( _Right ) >
         , &::std::decay_t< _Left >::operator - >::value)( ::std::declval< _Right >() ) );
 
-    template < typename _Left, typename _Right >
-    using GlobalMinusStrictOperation = decltype( (::std::integral_constant< OperatorMinusUnstrictOperation< _Left, _Right >(*)( _Left, _Right ), &operator - >::value)( ::std::declval< _Left >(), ::std::declval< _Right >() ) );
-
-//    template < typename _Type, typename ... >
-//    using PrefixPlusPlusUnstrictOperation = decltype( ++ ::std::declval< _Type >() );
+SCL_META_GLOBAL_BINARY_OPERATOR_DETECTION( -, TestSubtraction )
 
 static_assert( isDetected< PrefixPlusPlusUnstrictOperation, C >(), "" );
 static_assert( isDetected< PrefixPlusPlusMemberStrictOperation, C const >(), "" );
 static_assert( !::ScL::Meta::isDetected< PrefixPlusPlusUnstrictOperation, int >(), "" );
 
-static_assert( isDetected< SubtractionUnstrictOperation, C, int >(), "" );
-static_assert( isDetected< SubtractionMemberStrictOperation, C const, int >(), "" );
-//static_assert( isDetected< SubtractionGlobalStrictOperation, C const &, C const & >(), "" );
+static_assert( isDetected< TestSubtractionUnstrictOperation, C, int >(), "" );
+static_assert( isDetected< TestSubtractionMemberStrictOperation, C const, int >(), "" );
+static_assert( isDetected< TestSubtractionGlobalStrictOperation, C const &, C const & >(), "" );
 
-// TODO: trivial types
-static_assert( isDetected< OperatorMinusUnstrictOperation, int, int >(), "" );
-//static_assert( isDetected< GlobalMinusStrictOperation, int, int >(), "" );
+// trivial types
+static_assert( isDetected< TestSubtractionUnstrictOperation, int, int >(), "" );
+static_assert( !isDetected< TestSubtractionGlobalStrictOperation, int, int >(), "" );
 
 
+SCL_META_METHOD_DETECTION( foo, Foo )
 
-//static_assert( doesStaticFooMethodExist< B, void() >(), "" );
-//static_assert( doesStaticFooMethodExist< B >(), "The member void B::foo() const & was declared but not detected!" );
-//static_assert( doesStaticFooMethodExist< B, void() >(), "The member void B::foo() const & was declared but not detected!" );
+//static_assert( doesFooStaticMethodExist< B >(), "The member void B::foo() const & was declared but not detected!" );
 
 //// Дописать специализацию FooDetector
 //static_assert( doesFooMethodExist< B const &, int >(), "The member void B::foo() const & was not declared but detected!" );

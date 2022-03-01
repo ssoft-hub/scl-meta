@@ -4,7 +4,8 @@
 
 #include <ScL/Meta/Trait/IsDetected.h>
 
-#define SCL_DOES_FUNCTION_EXIST( function, Shortname ) \
+// Must be used after function definition
+#define SCL_META_FUNCTION_DETECTION( function, Shortname ) \
     template < typename ... _Arguments > \
     using Shortname ## FunctionUnstrictOperation = decltype( function( ::std::declval< _Arguments >() ... ) ); \
      \
