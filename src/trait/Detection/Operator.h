@@ -1,50 +1,44 @@
 #pragma once
-#ifndef SCL_UTILITY_DOES_OPERATOR_EXIST_H
-#define SCL_UTILITY_DOES_OPERATOR_EXIST_H
+#ifndef SCL_META_UTILITY_DOES_OPERATOR_EXIST_H
+#define SCL_META_UTILITY_DOES_OPERATOR_EXIST_H
 
 #include <ScL/Meta/Trait/IsDetected.h>
 #include <ScL/Utility/SimilarMethod.h>
 #include <ScL/Utility/SingleArgument.h>
 
-/*
-#define SCL_NONESUCH_GLOBAL_STRICT_OPERATION( symbol, Invokable ) \
-    template < typename ... _Arguments > \
-    using Invokable ## GlobalStrictOperation = decltype( nonesuch__( ::std::declval< _Arguments >() ... ) ); \
-
-#define SCL_BINARY_GLOBAL_STRICT_OPERATION( symbol, Invokable ) \
-    template < typename _Left, typename _Right > \
-    using Invokable ## GlobalStrictOperation = decltype( (::std::integral_constant< Invokable ## UnstrictOperation< _Left, _Right >(*)( _Left, _Right ), (&operator symbol) >::value)( ::std::declval< _Left >(), ::std::declval< _Right >() ) ); \
-*/
-
-#define SCL_PREFIX_UNARY_OPERATION( symbol, Invokable ) \
+#define SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( symbol, Invokable ) \
     template < typename _Right > \
     using Invokable ## UnstrictOperation = decltype( symbol ::std::declval< _Right >() ); \
      \
     template < typename _Right > \
     using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Right >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Right, Invokable ## UnstrictOperation< _Right >() >, (&::std::decay_t< _Right >::operator symbol) >::value)() ); \
 
-#define SCL_POSTFIX_UNARY_OPERATION( symbol, Invokable ) \
+#define SCL_META_POSTFIX_UNARY_OPERATOR_DETECTION( symbol, Invokable ) \
     template < typename _Left > \
     using Invokable ## UnstrictOperation = decltype( ::std::declval< _Left >() symbol ); \
      \
     template < typename _Left > \
-    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, Invokable ## UnstrictOperation< _Left >( int ) >, &::std::decay_t< _Left >::operator symbol >::value)( ::std::declval< int >() ) ); \
+    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, Invokable ## UnstrictOperation< _Left >( int ) >, (&::std::decay_t< _Left >::operator symbol) >::value)( ::std::declval< int >() ) ); \
 
-#define SCL_BINARY_OPERATION( symbol, Invokable ) \
+#define SCL_META_BINARY_OPERATOR_DETECTION( symbol, Invokable ) \
     template < typename _Left, typename _Right > \
     using Invokable ## UnstrictOperation = decltype( ::std::declval< _Left >() symbol ::std::declval< _Right >() ); \
      \
     template < typename _Left, typename _Right > \
-    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, Invokable ## UnstrictOperation< _Left, _Right >( _Right ) >, &::std::decay_t< _Left >::operator symbol >::value)( ::std::declval< _Right >() ) ); \
+    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, Invokable ## UnstrictOperation< _Left, _Right >( _Right ) >, (&::std::decay_t< _Left >::operator symbol) >::value)( ::std::declval< _Right >() ) ); \
 
-#define SCL_POSTFIX_OPERATION_WITH_ARGUMENT( symbol, Invokable ) \
+#define SCL_META_GLOBAL_BINARY_OPERATOR_DETECTION( symbol, Invokable ) \
+    template < typename _Left, typename _Right > \
+    using Invokable ## GlobalStrictOperation = decltype( (::std::integral_constant< Invokable ## UnstrictOperation< _Left, _Right >(*)( _Left, _Right ), (&operator symbol) >::value)( ::std::declval< _Left >(), ::std::declval< _Right >() ) ); \
+
+#define SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENT( symbol, Invokable ) \
     template < typename _Type, typename _Argument > \
     using Invokable ## UnstrictOperation = decltype( ::std::declval< _Type >(). operator symbol ( ::std::declval< _Argument >() ) ); \
      \
     template < typename _Type, typename _Argument > \
-    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, Invokable ## UnstrictOperation< _Type, _Argument >( _Argument ) >, &::std::decay_t< _Type >::operator symbol >::value)( ::std::declval< _Argument >() ) ); \
+    using Invokable ## MemberStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, Invokable ## UnstrictOperation< _Type, _Argument >( _Argument ) >, (&::std::decay_t< _Type >::operator symbol) >::value)( ::std::declval< _Argument >() ) ); \
 
-#define SCL_POSTFIX_OPERATION_WITH_ARGUMENTS( symbol, Invokable ) \
+#define SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS( symbol, Invokable ) \
     template < typename _Type, typename ... _Arguments > \
     using Invokable ## UnstrictOperation = decltype( ::std::declval< _Type >(). operator symbol ( ::std::declval< _Arguments >() ... ) ); \
      \
@@ -53,57 +47,65 @@
 
 namespace ScL { namespace Meta
 {
-    SCL_PREFIX_UNARY_OPERATION( & , AddressOf )
-    SCL_PREFIX_UNARY_OPERATION( * , Indirection )
-    SCL_POSTFIX_OPERATION_WITH_ARGUMENT( ->*, MemberIndirection )
-    SCL_BINARY_OPERATION( SCL_SINGLE_ARG( , ), Comma )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( & , AddressOf )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( * , Indirection )
+    SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENT( ->*, MemberIndirection )
+    SCL_META_BINARY_OPERATOR_DETECTION( SCL_SINGLE_ARG( , ), Comma )
 
-    SCL_POSTFIX_OPERATION_WITH_ARGUMENT( [], SquareBrackets )
-    SCL_POSTFIX_OPERATION_WITH_ARGUMENTS( (), RoundBrackets )
-    SCL_PREFIX_UNARY_OPERATION( +, PrefixPlus )
-    SCL_PREFIX_UNARY_OPERATION( -, PrefixMinus )
-    SCL_PREFIX_UNARY_OPERATION( ++, PrefixPlusPlus )
-    SCL_PREFIX_UNARY_OPERATION( --, PrefixMinusMinus )
-    SCL_PREFIX_UNARY_OPERATION( ~, PrefixBitwiseNot )
-    SCL_PREFIX_UNARY_OPERATION( !, PrefixLogicalNot )
+    SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENT( [], SquareBrackets )
+    SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS( (), RoundBrackets )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( +, PrefixPlus )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( -, PrefixMinus )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( ++, PrefixPlusPlus )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( --, PrefixMinusMinus )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( ~, PrefixBitwiseNot )
+    SCL_META_PREFIX_UNARY_OPERATOR_DETECTION( !, PrefixLogicalNot )
 
-    SCL_POSTFIX_UNARY_OPERATION( ++, PostfixPlusPlus )
-    SCL_POSTFIX_UNARY_OPERATION( --, PostfixMinusMinus )
+    SCL_META_POSTFIX_UNARY_OPERATOR_DETECTION( ++, PostfixPlusPlus )
+    SCL_META_POSTFIX_UNARY_OPERATOR_DETECTION( --, PostfixMinusMinus )
 
-    SCL_BINARY_OPERATION( ==, Equal )
-    SCL_BINARY_OPERATION( !=, NotEqual )
-    SCL_BINARY_OPERATION( <, Less )
-    SCL_BINARY_OPERATION( <=, LessOrEqual )
-    SCL_BINARY_OPERATION( >, Greater )
-    SCL_BINARY_OPERATION( >=, GreaterOrEqual )
+    SCL_META_BINARY_OPERATOR_DETECTION( ==, Equal )
+    SCL_META_BINARY_OPERATOR_DETECTION( !=, NotEqual )
+    SCL_META_BINARY_OPERATOR_DETECTION( <, Less )
+    SCL_META_BINARY_OPERATOR_DETECTION( <=, LessOrEqual )
+    SCL_META_BINARY_OPERATOR_DETECTION( >, Greater )
+    SCL_META_BINARY_OPERATOR_DETECTION( >=, GreaterOrEqual )
 
-    SCL_BINARY_OPERATION( *, Multiply )
-    SCL_BINARY_OPERATION( /, Divide )
-    SCL_BINARY_OPERATION( %, Modulo )
-    SCL_BINARY_OPERATION( +, Addition )
-    SCL_BINARY_OPERATION( -, Subtraction )
+    SCL_META_BINARY_OPERATOR_DETECTION( *, Multiply )
+    SCL_META_BINARY_OPERATOR_DETECTION( /, Divide )
+    SCL_META_BINARY_OPERATOR_DETECTION( %, Modulo )
+    SCL_META_BINARY_OPERATOR_DETECTION( +, Addition )
+    SCL_META_BINARY_OPERATOR_DETECTION( -, Subtraction )
 
-    SCL_BINARY_OPERATION( <<, ShiftLeft )
-    SCL_BINARY_OPERATION( >>, ShiftRight )
+    SCL_META_BINARY_OPERATOR_DETECTION( <<, ShiftLeft )
+    SCL_META_BINARY_OPERATOR_DETECTION( >>, ShiftRight )
 
-    SCL_BINARY_OPERATION( &, BitwiseAnd )
-    SCL_BINARY_OPERATION( |, BitwiseOr )
-    SCL_BINARY_OPERATION( ^, BitwiseXor )
+    SCL_META_BINARY_OPERATOR_DETECTION( &, BitwiseAnd )
+    SCL_META_BINARY_OPERATOR_DETECTION( |, BitwiseOr )
+    SCL_META_BINARY_OPERATOR_DETECTION( ^, BitwiseXor )
 
-    SCL_BINARY_OPERATION( &&, LogicalAnd )
-    SCL_BINARY_OPERATION( ||, LogicalOr )
+    SCL_META_BINARY_OPERATOR_DETECTION( &&, LogicalAnd )
+    SCL_META_BINARY_OPERATOR_DETECTION( ||, LogicalOr )
 
-    SCL_BINARY_OPERATION( =, Assignment )
-    SCL_BINARY_OPERATION( *=, MultiplyAssignment )
-    SCL_BINARY_OPERATION( /=, DivideAssignment )
-    SCL_BINARY_OPERATION( %=, ModuloAssignment )
-    SCL_BINARY_OPERATION( +=, AdditionAssignment )
-    SCL_BINARY_OPERATION( -=, SubtractionAssignment )
-    SCL_BINARY_OPERATION( <<=, ShiftLeftAssignment )
-    SCL_BINARY_OPERATION( >>=, ShiftRightAssignment )
-    SCL_BINARY_OPERATION( &=, BitwiseAndAssignment )
-    SCL_BINARY_OPERATION( |=, BitwiseOrAssignment )
-    SCL_BINARY_OPERATION( ^=, BitwiseXorAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( =, Assignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( *=, MultiplyAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( /=, DivideAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( %=, ModuloAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( +=, AdditionAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( -=, SubtractionAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( <<=, ShiftLeftAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( >>=, ShiftRightAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( &=, BitwiseAndAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( |=, BitwiseOrAssignment )
+    SCL_META_BINARY_OPERATOR_DETECTION( ^=, BitwiseXorAssignment )
 }}
+
+#undef SCL_META_PREFIX_UNARY_OPERATOR_DETECTION
+#undef SCL_META_POSTFIX_UNARY_OPERATOR_DETECTION
+#undef SCL_META_BINARY_OPERATOR_DETECTION
+// Must be used after global operator definition
+// #undef SCL_META_GLOBAL_BINARY_OPERATOR_DETECTION
+#undef SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENT
+#undef SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS
 
 #endif
