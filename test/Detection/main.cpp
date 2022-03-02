@@ -162,7 +162,8 @@ C operator - ( const C & left, const C & right );   // global binary
     using TestSubtractionMemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, TestSubtractionUnstrictOperation< _Left, _Right >( _Right ) >
         , &::std::decay_t< _Left >::operator - >::value)( ::std::declval< _Right >() ) );
 
-SCL_META_GLOBAL_BINARY_OPERATOR_DETECTION( -, TestSubtraction )
+    template < typename _Left, typename _Right >
+    using TestSubtractionGlobalStrictOperation = decltype( (::std::integral_constant< TestSubtractionUnstrictOperation< _Left, _Right >(*)( _Left, _Right ), (&operator -) >::value)( ::std::declval< _Left >(), ::std::declval< _Right >() ) );
 
 static_assert( isDetected< PrefixPlusPlusUnstrictOperation, C >(), "" );
 static_assert( isDetected< PrefixPlusPlusMemberStrictOperation, C const >(), "" );
@@ -176,48 +177,7 @@ static_assert( isDetected< TestSubtractionGlobalStrictOperation, C const &, C co
 static_assert( isDetected< TestSubtractionUnstrictOperation, int, int >(), "" );
 static_assert( !isDetected< TestSubtractionGlobalStrictOperation, int, int >(), "" );
 
-
-SCL_META_METHOD_DETECTION( foo, Foo )
-
-//static_assert( doesFooStaticMethodExist< B >(), "The member void B::foo() const & was declared but not detected!" );
-
-//// Дописать специализацию FooDetector
-//static_assert( doesFooMethodExist< B const &, int >(), "The member void B::foo() const & was not declared but detected!" );
-//static_assert( !doesFooMethodExist< B const &, int(int) >(), "The member void B::foo() const & was not declared but detected!" );
-
-//static_assert( doesFooMethodExist< B const, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-//static_assert( doesFooMethodExist< B const &, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-//static_assert( doesFooMethodExist< B const &&, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-
-//static_assert( !doesFooMethodExistExact< B const, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-//static_assert( doesFooMethodExistExact< B const &, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-//static_assert( doesFooMethodExistExact< B const &&, void(int) >(), "The member void B::foo() const & was not declared but detected!" );
-
-//static_assert( isDetected< FooMethodUnstrictOperation, B >(), "" );
-
 int main ( int, char ** )
 {
-//    using Stream = int;
-//    using Value = int;
-
-
-//    static_assert( !doesFooMethodExist< B >(), "" );
-//    static_assert( doesFooMethodExist< C, int >(), "" );
-
-//    static_assert( doesFooMethodExist< A, void(void) >(), "" );
-
-
-//    if ( isDetected< ValueFunction >() )
-//        /*true*/;
-
-//    if ( isDetected< LeftShiftOperator, Stream, Value >() )
-//        /*true*/;
-
-//    if ( isDetected< ValueFunction, int >() )
-//        /*false*/;
-
-////    if ( isDetected< LeftShiftOperator< Stream, Value > >() )
-////        /*true*/;
-
     return 0;
 }
