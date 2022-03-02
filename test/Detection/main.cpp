@@ -142,17 +142,14 @@ struct C
     C operator - ( int ) const;       // binary
 };
 
-C operator - ( const C & left, const C & right );   // global binary
-
-
+C operator - (const C& left, const C& right);   // global binary
 
 // Any member
-    template < typename _Type, typename ... _Arguments >
-    using TestPlusPlusUnstrictOperation = decltype( ::std::declval< _Type >().operator ++ ( ::std::declval< _Arguments >() ... ) );
+    template < typename _Type >
+    using TestPlusPlusUnstrictOperation = decltype( ++ ::std::declval< _Type >() );
 
-    template < typename _Type, typename ... _Arguments >
-    using TestPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, TestPlusPlusUnstrictOperation< _Type, _Arguments ... >( _Arguments ... ) >
-        , &::std::decay_t< _Type >::operator ++ >::value)( ::std::declval< _Arguments >() ... ) );
+    template < typename _Type >
+    using TestPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, TestPlusPlusUnstrictOperation< _Type >() >, &::std::decay_t< _Type >::operator ++ >::value)() );
 
 // Any global
     template < typename _Left, typename _Right >
@@ -165,17 +162,18 @@ C operator - ( const C & left, const C & right );   // global binary
     template < typename _Left, typename _Right >
     using TestSubtractionGlobalStrictOperation = decltype( (::std::integral_constant< TestSubtractionUnstrictOperation< _Left, _Right >(*)( _Left, _Right ), (&operator -) >::value)( ::std::declval< _Left >(), ::std::declval< _Right >() ) );
 
-static_assert( isDetected< PrefixPlusPlusUnstrictOperation, C >(), "" );
-static_assert( isDetected< PrefixPlusPlusMemberStrictOperation, C const >(), "" );
-static_assert( !::ScL::Meta::isDetected< PrefixPlusPlusUnstrictOperation, int >(), "" );
+static_assert( isDetected< TestPlusPlusUnstrictOperation, C >(), "The member C::operator ++ () was declared but not detected!" );
+static_assert( isDetected< TestPlusPlusStrictOperation, C const >(), "The member C::operator ++ () const was declared but not detected!" );
+static_assert( isDetected< TestPlusPlusUnstrictOperation, int & >(), "The fundamental int::operator ++ () & exists but not detected!" );
+static_assert( !isDetected< TestPlusPlusUnstrictOperation, int >(), "The fundamental int::operator ++ () not exists but detected!");
 
-static_assert( isDetected< TestSubtractionUnstrictOperation, C, int >(), "" );
-static_assert( isDetected< TestSubtractionMemberStrictOperation, C const, int >(), "" );
-static_assert( isDetected< TestSubtractionGlobalStrictOperation, C const &, C const & >(), "" );
+static_assert( isDetected< TestSubtractionUnstrictOperation, C, int >(), "The member C::operator - (int) const was declared but not detected!" );
+static_assert( isDetected< TestSubtractionMemberStrictOperation, C const, int >(), "The member C::operator - (int) const was declared but not detected!" );
+static_assert( isDetected< TestSubtractionGlobalStrictOperation, C const &, C const & >(), "The global operator - (C const &, C const &) was declared but not detected!" );
 
 // trivial types
-static_assert( isDetected< TestSubtractionUnstrictOperation, int, int >(), "" );
-static_assert( !isDetected< TestSubtractionGlobalStrictOperation, int, int >(), "" );
+static_assert( isDetected< TestSubtractionUnstrictOperation, int, int >(), "The fundamental operator - (int, int) exists but not detected!" );
+static_assert( !isDetected< TestSubtractionGlobalStrictOperation, int, int >(), "The fundamental operator - (int, int) has no strict detection!" );
 
 int main ( int, char ** )
 {
