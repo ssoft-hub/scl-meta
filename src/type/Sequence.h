@@ -76,28 +76,28 @@ namespace ScL { namespace Meta
     template < typename ... _Types, typename _OtherTypes /*...*/ >
     constexpr bool contains ( Sequence< _Types ... >, Sequence< _OtherTypes /*...*/ > )
     {
-#if __cplusplus >= 201703L
-        return ( ... || Sequence< _OtherTypes >{} == Sequence< _Types >{} );
-#else
+//#if __cplusplus >= 201703L
+//        return ( ... || Sequence< _OtherTypes >{} == Sequence< _Types >{} );
+//#else
         bool results[] = { Sequence< _OtherTypes /*...*/ >{} == Sequence< _Types >{} ... };
         bool result = false;
         for ( bool value : results ) { result |= value; }
         return result;
-#endif
+//#endif
     }
 
     template < typename ... _Types, typename _OtherTypes /*...*/ >
     constexpr auto indexOf ( Sequence< _Types ... >, Sequence< _OtherTypes /*...*/ > )
     {
         bool results[] = { Sequence< _OtherTypes /*...*/ >{} == Sequence< _Types >{} ... };
-#if __cplusplus >= 201703L
-        return ::std::find( results, results + sizeof... ( _Types ), true ) - results;
-#else
+//#if __cplusplus >= 201703L
+//        return ::std::find( results, results + sizeof... ( _Types ), true ) - results;
+//#else
         for ( decltype( sizeof...( _Types ) ) i = 0; i < sizeof...( _Types ); ++i )
             if ( results[i] )
                 return i;
         return sizeof...( _Types );
-#endif
+//#endif
     }
 
     template < typename ... _LeftTypes, typename ... _RightTypes >
