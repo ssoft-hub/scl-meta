@@ -6,10 +6,10 @@ using namespace ::ScL::Meta;
 /// FUNCTION DETECTION TEST
 
 // Define some kinds of foo function
-void foo () {}
-int foo ( int ) { return {}; }
-double foo ( double ) { return {}; }
-void foo ( int, double ) {}
+void foo ();
+int foo ( int );
+double foo ( double );
+void foo ( int, double );
 
 // Define archetypal type for operation
 
@@ -83,7 +83,7 @@ template < typename _Type, typename ... _Arguments >
 using FooStaticMethodStrictOperation = decltype( ::std::integral_constant< FooUnstrictMemberOperation< _Type, _Arguments ... >(*)( _Arguments ... ), &::std::decay_t< _Type >::foo >::value( ::std::declval< _Arguments >() ... ) );
 
 template < typename _Type, typename ... _Arguments >
-using FooMethodStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, FooUnstrictMemberOperation< _Type, _Arguments ... >( _Arguments ... ) >, &::std::decay_t< _Type >::foo >::value)( ::std::declval< _Arguments >() ... ) );
+using FooMethodStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::MemberSignature< _Type, FooUnstrictMemberOperation< _Type, _Arguments ... >( _Arguments ... ) >, &::std::decay_t< _Type >::foo >::value)( ::std::declval< _Arguments >() ... ) );
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -97,7 +97,7 @@ struct A
 static_assert( isDetected< FooUnstrictMemberOperation, A >(), "The member A::foo() was declared but not detected!" );
 static_assert( !isDetected< FooUnstrictMemberOperation, A const >(), "The member A::foo() const was not declared but detected!" );
 static_assert( isDetected< FooUnstrictMemberOperation, A, int >(), "The member A::foo(int) const was declared but not detected!" );
-static_assert( isDetected< FooUnstrictMemberOperation, A, double >(), "The convenient member A::foo(int) const was declared but not detected!" );
+static_assert( isDetected< FooUnstrictMemberOperation, A const, double >(), "The convenient member A::foo(int) const was declared but not detected!" );
 
 static_assert( isDetectedExact< void, FooUnstrictMemberOperation, A >(), "The member void A::foo() was declared but not detected!" );
 static_assert( isDetectedExact< int, FooUnstrictMemberOperation, A, int >(), "The member int A::foo(int) const was declared but not detected!" );
@@ -149,14 +149,14 @@ C operator - (const C& left, const C& right);   // global binary
     using TestPlusPlusUnstrictOperation = decltype( ++ ::std::declval< _Type >() );
 
     template < typename _Type >
-    using TestPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Type, TestPlusPlusUnstrictOperation< _Type >() >, &::std::decay_t< _Type >::operator ++ >::value)() );
+    using TestPlusPlusStrictOperation = decltype( (::std::declval< _Type >() .* ::std::integral_constant< ::ScL::MemberSignature< _Type, TestPlusPlusUnstrictOperation< _Type >() >, &::std::decay_t< _Type >::operator ++ >::value)() );
 
 // Any global
     template < typename _Left, typename _Right >
     using TestSubtractionUnstrictOperation = decltype( ::std::declval< _Left >() - ::std::declval< _Right >() );
 
     template < typename _Left, typename _Right >
-    using TestSubtractionMemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::SimilarMethod< _Left, TestSubtractionUnstrictOperation< _Left, _Right >( _Right ) >
+    using TestSubtractionMemberStrictOperation = decltype( (::std::declval< _Left >() .* ::std::integral_constant< ::ScL::MemberSignature< _Left, TestSubtractionUnstrictOperation< _Left, _Right >( _Right ) >
         , &::std::decay_t< _Left >::operator - >::value)( ::std::declval< _Right >() ) );
 
     template < typename _Left, typename _Right >
