@@ -72,18 +72,6 @@ namespace ScL { namespace Meta
 namespace ScL { namespace Meta
 {
     template < template < typename ... > class _Operation, typename ... _Arguments >
-    /*inline*/ constexpr bool is_detected = IsDetected< _Operation, _Arguments ... >::value;
-
-    template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    /*inline*/ constexpr bool is_detected_exact = ::std::is_same< _Expected, DetectedType< _Operation, _Arguments ... > >::value;
-
-    template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    /*inline*/ constexpr bool is_detected_convertible = ::std::is_constructible< _Expected, DetectedType< _Operation, _Arguments ... > >::value;
-}}
-
-namespace ScL { namespace Meta
-{
-    template < template < typename ... > class _Operation, typename ... _Arguments >
     inline constexpr bool isDetected () { return DetectedResult< _Operation, _Arguments ... >::value; }
         /*!<
          * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments.
