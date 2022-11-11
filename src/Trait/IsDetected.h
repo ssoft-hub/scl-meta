@@ -72,20 +72,20 @@ namespace ScL { namespace Meta
 namespace ScL { namespace Meta
 {
     template < template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetected () { return DetectedResult< _Operation, _Arguments ... >::value; }
+    inline constexpr bool isDetected () { return DetectedResult< _Operation, _Arguments ... >{}; }
         /*!<
          * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments.
          */
 
     template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetectedExact () { return ::std::is_same< _Expected, DetectedType< _Operation, _Arguments ... > >::value; }
+    inline constexpr bool isDetectedExact () { return ::std::is_same< _Expected, DetectedType< _Operation, _Arguments ... > >{}; }
         /*!<
          * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments,
          * с точным соответствием возвращаемого значения типу _Expected.
          */
 
     template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetectedConvertible () { return ::std::is_constructible< _Expected, DetectedType< _Operation, _Arguments ... > >::value; }
+    inline constexpr bool isDetectedConvertible () { return ::std::is_constructible< _Expected, DetectedType< _Operation, _Arguments ... > >{}; }
         /*!<
          * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments,
          * с конвертируемым типом возвращаемого значения к типу _Expected.
