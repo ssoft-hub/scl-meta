@@ -106,7 +106,7 @@ namespace ScL { namespace Meta
 
 namespace ScL { namespace Meta { namespace Detail {
     template < typename, int > struct Types;
-    template < typename _Tag > struct Types< _Tag, 0 > { static constexpr auto sequence () { return ::ScL::Meta::Sequence<>::value; } };
+    template < typename _Tag > struct Types< _Tag, 0 > { static constexpr auto sequence () { return ::ScL::Meta::Sequence<>{}; } };
 }}}
 
 #define SCL_META_SEQUENCE_APPEND( Tag, Type ) \
@@ -115,7 +115,7 @@ namespace ScL { namespace Meta { namespace Detail {
         template <> \
         struct Types< Tag, SCL_META_COUNTER_VALUE( Tag ) > \
         { \
-            static constexpr auto sequence () { return append( Types< Tag, SCL_META_COUNTER_VALUE( Tag ) - 1 >::sequence(), Sequence< Type >::value ); } \
+            static constexpr auto sequence () { return append( Types< Tag, SCL_META_COUNTER_VALUE( Tag ) - 1 >::sequence(), Sequence< Type >{} ); } \
         }; \
     }}} \
 
