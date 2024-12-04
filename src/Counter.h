@@ -10,7 +10,7 @@
 namespace ScL { namespace Meta
 {
     template< ::std::uint_fast32_t _n >
-    struct CounterValue : ::std::integral_constant< ::std::uint_fast32_t, _n > {};
+    using CounterValue = ::std::integral_constant< ::std::uint_fast32_t, _n >;
 }}
 
 namespace ScL { namespace Meta
