@@ -10,6 +10,7 @@
     using Shortname ## FunctionUnstrictOperation = decltype( function( ::std::declval< _Arguments >() ... ) ); \
      \
     template < typename ... _Arguments > \
-    using Shortname ## FunctionStrictOperation = decltype( ::std::integral_constant< FooFunctionUnstrictOperation< _Arguments ... >(*)( _Arguments ... ), &function >::value( ::std::declval< _Arguments >() ... ) ); \
+    using Shortname ## FunctionStrictOperation = decltype( ::std::integral_constant< FooFunctionUnstrictOperation< _Arguments ... >(*)( _Arguments ... ), \
+        (FooFunctionUnstrictOperation< _Arguments ... >(*)( _Arguments ... )) &function >::value( ::std::declval< _Arguments >() ... ) ); \
 
 #endif
