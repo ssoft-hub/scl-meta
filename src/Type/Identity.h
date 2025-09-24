@@ -3,10 +3,11 @@
 
 #include "Sequence.h"
 
-namespace ScL { namespace Meta
+namespace ScL::Meta
 {
-    template < typename _Type > using Identity = Sequence< _Type >;
-        //!< Define type value as _Type (collection for only one type).
-}}
+    //! Define type value as _Type (collection for only one type).
+    template <typename _Type>
+    using Identity = Sequence<_Type>;
+} // namespace ScL::Meta
 
 #endif
