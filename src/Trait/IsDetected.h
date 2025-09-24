@@ -6,90 +6,117 @@
 
 #include <type_traits>
 
-namespace ScL { namespace Meta { namespace Detail
+namespace ScL::Meta::Detail
 {
     struct Nonesuch
     {
-        ~Nonesuch () = delete;
-        Nonesuch ( Nonesuch const & ) = delete;
-        void operator = ( Nonesuch const & ) = delete;
+        ~Nonesuch() = delete;
+        Nonesuch(Nonesuch const &) = delete;
+        void operator=(Nonesuch const &) = delete;
     };
 
-    template < typename _Default, typename _AlwaysVoid, template< typename ... > class _Operation, typename ... _Arguments >
+    template <typename _Default,
+        typename _AlwaysVoid,
+        template <typename...> class _Operation,
+        typename... _Arguments>
     struct Detector
     {
         using Result = ::std::false_type;
         using Type = _Default;
     };
 
-    template < typename _Default, template< typename ... > class _Operation, typename ... _Arguments >
-    struct Detector< _Default, ::std::void_t< _Operation< _Arguments ... > >, _Operation, _Arguments ... >
+    template <typename _Default, template <typename...> class _Operation, typename... _Arguments>
+    struct Detector<_Default, ::std::void_t<_Operation<_Arguments...> >, _Operation, _Arguments...>
     {
         using Result = ::std::true_type;
-        using Type = _Operation< _Arguments ... >;
+        using Type = _Operation<_Arguments...>;
     };
-}}}
+} // namespace ScL::Meta::Detail
 
-namespace ScL { namespace Meta
+namespace ScL::Meta
 {
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    using Detected = typename ::ScL::Meta::Detail::Detector< ::ScL::Meta::Detail::Nonesuch, void, _Operation, _Arguments ... >;
-        /*!<
-         * Тип является вариантом типа Detector с вложеными типами Result и Type, представляющими результат операции, определяемой типом _Operation с аргументами _Arguments.
-         * Result - логический тип, который отражает наличие или отсутствие операции, определяемой типом _Operation с аргументами _Arguments.
-         * Type - тип результата выполнения операции, определяемой типом _Operation с аргументами _Arguments.
-         * В случае отсутствия операции, определяемой типом _Operation с аргументами _Arguments, тип Type является служебным типом Nonesuch.
-         */
+    /*!
+     * Тип является вариантом типа Detector с вложеными типами Result и Type, представляющими
+     * результат операции, определяемой типом _Operation с аргументами _Arguments. Result -
+     * логический тип, который отражает наличие или отсутствие операции, определяемой типом
+     * _Operation с аргументами _Arguments. Type - тип результата выполнения операции, определяемой
+     * типом _Operation с аргументами _Arguments. В случае отсутствия операции, определяемой типом
+     * _Operation с аргументами _Arguments, тип Type является служебным типом Nonesuch.
+     */
+    template <template <typename...> class _Operation, typename... _Arguments>
+    using Detected = typename ::ScL::Meta::Detail::Detector< ::ScL::Meta::Detail::Nonesuch,
+        void,
+        _Operation,
+        _Arguments...>;
 
-    template < typename _Default, template < typename ... > class _Operation, typename ... _Arguments >
-    using DetectedOr = typename ::ScL::Meta::Detail::Detector< _Default, void, _Operation, _Arguments ... >;
-        /*!<
-         * Тип является вариантом типа Detector с вложеными типами Result и Type, представляющими результат операции, определяемой типом _Operation с аргументами _Arguments.
-         * Result - логический тип, который отражает наличие или отсутствие операции, определяемой типом _Operation с аргументами _Arguments.
-         * Type - тип результата выполнения операции, определяемой типом _Operation с аргументами _Arguments.
-         * В случае отсутствия операции, определяемой типом _Operation с аргументами _Arguments, тип Type является указанным типом _Default.
-         */
+    /*!
+     * Тип является вариантом типа Detector с вложеными типами Result и Type, представляющими
+     * результат операции, определяемой типом _Operation с аргументами _Arguments. Result -
+     * логический тип, который отражает наличие или отсутствие операции, определяемой типом
+     * _Operation с аргументами _Arguments. Type - тип результата выполнения операции, определяемой
+     * типом _Operation с аргументами _Arguments. В случае отсутствия операции, определяемой типом
+     * _Operation с аргументами _Arguments, тип Type является указанным типом _Default.
+     */
+    template <typename _Default, template <typename...> class _Operation, typename... _Arguments>
+    using DetectedOr = typename ::ScL::Meta::Detail::Detector<_Default,
+        void,
+        _Operation,
+        _Arguments...>;
 
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    using DetectedType = typename Detected< _Operation, _Arguments ... >::Type;
-        /*!<
-         * Тип результата выполнения операции, определяемой типом _Operation с аргументами _Arguments.
-         */
+    /*!
+     * Тип результата выполнения операции, определяемой типом _Operation с аргументами _Arguments.
+     */
+    template <template <typename...> class _Operation, typename... _Arguments>
+    using DetectedType = typename Detected<_Operation, _Arguments...>::Type;
 
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    using DetectedResult = typename Detected< _Operation, _Arguments ... >::Result;
-        /*!<
-         * Логический тип, который отражает наличие или отсутствие операции, определяемой типом _Operation с аргументами _Arguments.
-         */
+    /*!
+     * Логический тип, который отражает наличие или отсутствие операции, определяемой типом
+     * _Operation с аргументами _Arguments.
+     */
+    template <template <typename...> class _Operation, typename... _Arguments>
+    using DetectedResult = typename Detected<_Operation, _Arguments...>::Result;
 
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    using IsDetected = DetectedResult< _Operation, _Arguments ... >;
-        /*!<
-         * Синоним ResultOfDetected, который отражает наличие или отсутствие операции, определяемой типом _Operation с аргументами _Arguments.
-         */
-}}
+    /*!
+     * Синоним ResultOfDetected, который отражает наличие или отсутствие операции, определяемой
+     * типом _Operation с аргументами _Arguments.
+     */
+    template <template <typename...> class _Operation, typename... _Arguments>
+    using IsDetected = DetectedResult<_Operation, _Arguments...>;
+} // namespace ScL::Meta
 
-namespace ScL { namespace Meta
+namespace ScL::Meta
 {
-    template < template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetected () { return DetectedResult< _Operation, _Arguments ... >::value; }
-        /*!<
-         * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments.
-         */
+    /*!
+     * Возвращает логический результат наличия или отсутствия операции, определяемой типом
+     * _Operation с аргументами _Arguments.
+     */
+    template <template <typename...> class _Operation, typename... _Arguments>
+    inline constexpr bool isDetected()
+    {
+        return DetectedResult<_Operation, _Arguments...>::value;
+    }
 
-    template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetectedExact () { return ::std::is_same< _Expected, DetectedType< _Operation, _Arguments ... > >::value; }
-        /*!<
-         * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments,
-         * с точным соответствием возвращаемого значения типу _Expected.
-         */
+    /*!
+     * Возвращает логический результат наличия или отсутствия операции, определяемой типом
+     * _Operation с аргументами _Arguments, с точным соответствием возвращаемого значения типу
+     * _Expected.
+     */
+    template <typename _Expected, template <typename...> class _Operation, typename... _Arguments>
+    inline constexpr bool isDetectedExact()
+    {
+        return ::std::is_same<_Expected, DetectedType<_Operation, _Arguments...> >::value;
+    }
 
-    template < typename _Expected, template < typename ... > class _Operation, typename ... _Arguments >
-    inline constexpr bool isDetectedConvertible () { return ::std::is_constructible< _Expected, DetectedType< _Operation, _Arguments ... > >::value; }
-        /*!<
-         * Возвращает логический результат наличия или отсутствия операции, определяемой типом _Operation с аргументами _Arguments,
-         * с конвертируемым типом возвращаемого значения к типу _Expected.
-         */
-}}
+    /*!
+     * Возвращает логический результат наличия или отсутствия операции, определяемой типом
+     * _Operation с аргументами _Arguments, с конвертируемым типом возвращаемого значения к типу
+     * _Expected.
+     */
+    template <typename _Expected, template <typename...> class _Operation, typename... _Arguments>
+    inline constexpr bool isDetectedConvertible()
+    {
+        return ::std::is_constructible<_Expected, DetectedType<_Operation, _Arguments...> >::value;
+    }
+} // namespace ScL::Meta
 
 #endif
