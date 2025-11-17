@@ -1,17 +1,33 @@
-cmake_minimum_required( VERSION 3.14 )
+# Header-only library: meta (depends on utility)
+# Produces targets:
+#   - scl-meta (real interface target)
+#   - SCL::meta (ALIAS in build tree)
+# Exported/imported name is set to "meta" so installed import is SCL::meta.
 
-set( MODULE meta )
+# Resolve module root directory (module/meta)
+get_filename_component(SCL_META_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 
-set( SCL_MODULE ScL::${MODULE} )
-set( TARGET scl-${MODULE} )
+set(MODULE meta)
+add_library(scl-${MODULE} INTERFACE)
+add_library(SCL::${MODULE} ALIAS scl-${MODULE})
 
-project( ${TARGET} VERSION 0.1.0 LANGUAGES CXX )
+# Ensure the imported/install name is SCL::meta
+set_target_properties(scl-${MODULE} PROPERTIES EXPORT_NAME meta)
 
-set( CMAKE_CXX_STANDARD 17 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
+target_include_directories(scl-${MODULE}
+    INTERFACE
+        $<BUILD_INTERFACE:${SCL_META_ROOT}/include>
+        $<INSTALL_INTERFACE:include>
+)
 
-add_library( ${TARGET} INTERFACE )
-add_library( ${SCL_MODULE} ALIAS ${TARGET} )
+# Universal dependency on SCL::utility:
+# - In superbuilds, SCL::utility target is already defined.
+# - In standalone builds, locate installed package SCL with 'utility' component.
+if (NOT TARGET SCL::utility)
+    find_package(SCL CONFIG REQUIRED COMPONENTS utility)
+endif()
 
-target_include_directories( ${TARGET} INTERFACE ${SCL_INCLUDE_DIR} )
-target_link_libraries( ${TARGET} INTERFACE ScL::utility )
+target_link_libraries(scl-${MODULE}
+    INTERFACE
+        SCL::utility
+)
