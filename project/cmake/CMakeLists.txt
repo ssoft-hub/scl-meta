@@ -31,3 +31,32 @@ target_link_libraries(scl-${MODULE}
     INTERFACE
         SCL::utility
 )
+
+# ---- Make headers visible in IDE ----
+set(SCL_META_PUBLIC_DIR "${SCL_META_ROOT}/include")
+file(GLOB_RECURSE SCL_META_HEADERS CONFIGURE_DEPENDS
+    "${SCL_META_PUBLIC_DIR}/*.h"
+    "${SCL_META_PUBLIC_DIR}/*.hpp"
+    "${SCL_META_PUBLIC_DIR}/*.hh"
+    "${SCL_META_PUBLIC_DIR}/*.hxx"
+    "${SCL_META_PUBLIC_DIR}/*.inl"
+)
+
+# Prefer CMake 3.23+ FILE_SET HEADERS so IDEs (VS, Xcode) attach headers to the target itself
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.23")
+    target_sources(scl-${MODULE} INTERFACE
+        FILE_SET HEADERS
+            BASE_DIRS "${SCL_META_PUBLIC_DIR}"
+            FILES ${SCL_META_HEADERS}
+    )
+endif()
+
+# --- IDE-only aggregation target (Qt Creator will show these files) ---
+add_custom_target(scl_meta ALL
+    SOURCES ${SCL_META_HEADERS}
+)
+
+# Group headers nicely in IDEs (Visual Studio/Xcode)
+if (SCL_META_HEADERS)
+    source_group(TREE "${SCL_META_PUBLIC_DIR}" FILES ${SCL_META_HEADERS})
+endif()

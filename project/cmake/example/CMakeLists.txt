@@ -9,11 +9,12 @@ if (EXISTS "${SCL_META_EXAMPLE_DIR}")
         if (IS_DIRECTORY "${subdir}")
             get_filename_component(name "${subdir}" NAME)
             file(GLOB_RECURSE srcs CONFIGURE_DEPENDS
+                "${subdir}/*.h" "${subdir}/*.hh" "${subdir}/*.hpp"
                 "${subdir}/*.c" "${subdir}/*.cc" "${subdir}/*.cpp"
             )
 
             if (srcs)
-                set(tgt "meta_example_${name}")
+                set(tgt "meta_${name}_example")
                 add_executable(${tgt} ${srcs})
                 target_link_libraries(${tgt} PRIVATE SCL::meta)
                 target_compile_features(${tgt} PRIVATE cxx_std_20)
