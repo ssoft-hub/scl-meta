@@ -42,21 +42,48 @@ file(GLOB_RECURSE SCL_META_HEADERS CONFIGURE_DEPENDS
     "${SCL_META_PUBLIC_DIR}/*.inl"
 )
 
+# ---- Private headers and sources (implementation files) ----
+set(SCL_META_PRIVATE_DIR "${SCL_META_ROOT}/src")
+file(GLOB_RECURSE SCL_META_PRIVATE_HEADERS CONFIGURE_DEPENDS
+    "${SCL_META_PRIVATE_DIR}/*.h"
+    "${SCL_META_PRIVATE_DIR}/*.hpp"
+    "${SCL_META_PRIVATE_DIR}/*.hh"
+    "${SCL_META_PRIVATE_DIR}/*.hxx"
+    "${SCL_META_PRIVATE_DIR}/*.inl"
+)
+file(GLOB_RECURSE SCL_META_PRIVATE_SOURCES CONFIGURE_DEPENDS
+    "${SCL_META_PRIVATE_DIR}/*.c"
+    "${SCL_META_PRIVATE_DIR}/*.cpp"
+)
+
+# ---- Add implementation sources to the target normally ----
+target_sources(scl-${MODULE} PRIVATE
+    ${SCL_META_PRIVATE_SOURCES}
+)
+
 # Prefer CMake 3.23+ FILE_SET HEADERS so IDEs (VS, Xcode) attach headers to the target itself
+# IMPORTANT:
+# - The HEADERS file set must always keep a single scope across the entire project.
+# - We use PUBLIC for the HEADERS file set in this target.
+# - Do NOT add private headers to the HEADERS file set; that causes scope conflicts.
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.23")
-    target_sources(scl-${MODULE} INTERFACE
+    target_sources(scl-${MODULE} PUBLIC
         FILE_SET HEADERS
-            BASE_DIRS "${SCL_META_PUBLIC_DIR}"
+            BASE_DIRS ${SCL_META_PUBLIC_DIR}
             FILES ${SCL_META_HEADERS}
     )
 endif()
 
-# --- IDE-only aggregation target (Qt Creator will show these files) ---
+# --- IDE-only aggregation target (Qt Creator, etc., will show these files) ---
 add_custom_target(scl_meta ALL
-    SOURCES ${SCL_META_HEADERS}
+    SOURCES
+        ${SCL_META_HEADERS}
+        ${SCL_META_PRIVATE_HEADERS}
+        ${SCL_META_PRIVATE_SOURCES}
 )
 
-# Group headers nicely in IDEs (Visual Studio/Xcode)
+# ---- Group files nicely in IDEs (Visual Studio/Xcode) ----
 if (SCL_META_HEADERS)
-    source_group(TREE "${SCL_META_PUBLIC_DIR}" FILES ${SCL_META_HEADERS})
+    source_group(TREE "${SCL_META_PUBLIC_DIR}"  FILES ${SCL_META_HEADERS})
+    source_group(TREE "${SCL_META_PRIVATE_DIR}" FILES ${SCL_META_PRIVATE_HEADERS} ${SCL_META_PRIVATE_SOURCES})
 endif()

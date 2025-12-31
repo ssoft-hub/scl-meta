@@ -4,7 +4,7 @@
 
 #include <ScL/Meta/Trait/IsDetected.h>
 #include <ScL/Utility/MemberSignature.h>
-#include <ScL/Utility/SingleArgument.h>
+#include <ScL/Utility/Preprocessor.h>
 
 #define SCL_META_PREFIX_UNARY_OPERATOR_DETECTION(symbol, Invokable)                 \
     template <typename _Right>                                                      \
@@ -88,7 +88,7 @@ namespace ScL::Meta
     SCL_META_PREFIX_UNARY_OPERATOR_DETECTION(*, Indirection)
     SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS(->*, MemberIndirection)
     SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS(->, Dereference)
-    SCL_META_BINARY_OPERATOR_DETECTION(SCL_SINGLE_ARG(, ), Comma)
+    SCL_META_BINARY_OPERATOR_DETECTION(SCL_EXPAND(, ), Comma)
 
     SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS([], SquareBrackets)
     SCL_META_POSTFIX_OPERATOR_DETECTION_WITH_ARGUMENTS((), RoundBrackets)
